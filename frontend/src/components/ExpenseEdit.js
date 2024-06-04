@@ -6,9 +6,18 @@ import request from "../request";
 import styles from "./ExpenseEdit.module.css";
 import Button from "./Button";
 import { useNotifications } from "./Notifications";
+import axiosClient from "../utils/axiosClient";
 
 function ExpenseForm({ expense, onSave, disabled, onDelete }) {
   const [changes, setChanges] = useState({});
+  const [accountId, _] = useState(expense ? expense.accountId : '');
+  const [accounts, setAccounts] = useState([]);
+
+  useEffect(() => {
+    axiosClient.get('/accounts').then(response => {
+      setAccounts(response.data);
+    });
+  }, []);
 
   function changeField(field, value) {
     setChanges({
@@ -62,6 +71,17 @@ function ExpenseForm({ expense, onSave, disabled, onDelete }) {
             value={formData.description}
             onChange={(event) => changeField("description", event.target.value)}
           />
+        </div>
+
+        <div className={styles.formRow}>
+          <label>Account</label>
+          <select value={accountId} onChange={(e) => changeField("account_id" ,e.target.value)} required>
+            {accounts.map(account => (
+              <option key={account.id} value={account.id}>
+                {account.name} - ${account.balance}
+              </option>
+            ))}
+          </select>
         </div>
       </fieldset>
 

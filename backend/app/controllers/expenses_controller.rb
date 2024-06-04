@@ -1,4 +1,6 @@
 class ExpensesController < ApplicationController
+  before_action :load_expense, only: %i(update)
+
   rescue_from ActiveRecord::RecordInvalid do |error|
     expense = error.record
     render json: expense.errors, status: :bad_request
@@ -10,18 +12,27 @@ class ExpensesController < ApplicationController
 
   def show
     expense = Expense.find(params[:id])
-    render json: expense
+    render json: expense, status: :ok
   end
 
   def create
-    expense = Expense.create!(expense_params)
-    render json: expense
+    expense = Expense.new(expense_params)
+
+    if expense.save
+      render json: expense, status: :created
+    else
+      render json: expense.errors.full_messages, status: :unprocessable_entity
+    end
+
+
   end
 
   def update
-    expense = Expense.find(params[:id])
-    expense.update!(expense_params)
-    render json: expense
+    if @expense.update(expense_params)
+      :no_content
+    else
+      render json: expense.errors.full_messages, status: :unprocessable_entity
+    end
   end
 
   def destroy
@@ -31,7 +42,11 @@ class ExpensesController < ApplicationController
 
   private
 
+  def load_expense
+    @expense = Expense.find(params[:id])
+  end
+
   def expense_params
-    params.permit(:amount, :date, :description)
+    params.permit(:amount, :date, :description, :account_id)
   end
 end

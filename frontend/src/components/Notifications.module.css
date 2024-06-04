@@ -22,6 +22,11 @@
   color: #ffffff;
 }
 
+.success {
+  background: #03bb2b;
+  color: #ffffff;
+}
+
 .error svg polygon {
   fill: #ffffff;
 }

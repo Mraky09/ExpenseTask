@@ -1,0 +1,9 @@
+.emptyState {
+  margin: 60px;
+  text-align: center;
+}
+
+.emptyStateMessage {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
